@@ -31,13 +31,13 @@ connectToDb()
     console.log("Error starting server: ", err);
   });
 
-const updateLesson = (lessonId, spaces) => {
+const updateLesson = (lessonId, availableInventory) => {
   const db = getDb();
   const collection = db.collection("lesson");
 
   collection.findOneAndUpdate(
     { _id: ObjectId(lessonId) },
-    { $inc: { spaces: -spaces } },
+    { $inc: { availableInventory: -availableInventory } },
     (err, result) => {
       if (err) throw err;
     }
@@ -52,7 +52,7 @@ app.get("/lessons", async (req, res, next) => {
     if (searchText) {
       query = {
         $or: [
-          { subject: { $regex: searchText, $options: 'i' } },
+          { title: { $regex: searchText, $options: 'i' } },
           { location: { $regex: searchText, $options: 'i' } }
         ]
       }
@@ -90,9 +90,9 @@ app.post("/orders", async (req, res, next) => {
 
 app.put("/lessons/:id", (req, res) => {
   const lessonId = req.params.id;
-  const spaces = req.body.spaces;
+  const availableInventory = req.body.availableInventory;
 
-  updateLesson(lessonId, spaces);
+  updateLesson(lessonId, availableInventory);
 
   res.send("Lesson updated successfully");
 });
